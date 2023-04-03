@@ -39,7 +39,7 @@
   become: true
   tasks:
 
-  - name: install apache2 and php package
+  - name: install apache2 and php package (Ubuntu)
     tags: apache,apache2,ubuntu
     apt:
       name:
@@ -48,7 +48,7 @@
       state: latest
     when: ansible_distribution == "Ubuntu"
 
-  - name: install apache2 and php package
+  - name: install apache2 and php package (AlmaLinux)
     tags: apache,centos,httpd
     dnf:
       name:
@@ -56,6 +56,30 @@
         - php
       state: latest
     when: ansible_distribution == "AlmaLinux"
+
+  - name: start httpd (AlmaLinux)
+    tags: apache,AlmaLinux,httpd
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    when: ansible_distribution == "AlmaLinux"
+
+  - name: change an e-mail address
+    tags: apache,AlmaLinux,httpd
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin somebody@example.com
+    when: ansible_distribution == "AlmaLinux"
+    register: httpd
+
+  - name: restart httpd (AlmaLinux)
+    tags: apache,almalinux,httpd
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed
 
   - name: copy default html file for site
     tags: apache,apache2,httpd
