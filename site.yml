@@ -7,16 +7,28 @@
   - name: install updates (AlmaLinux)
     tags: always
     dnf:
-      update_only: yes
       update_cache: yes
+    change_when: false
     when: ansible_distribution == "AlmaLinux"
 
   - name: install updates (Ubuntu)
     tags: always
     apt:
-       upgrade: dist
        update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Ubuntu"
+
+
+- hosts: all
+  become: true
+  tasks:
+
+    - name: add ssh key for simone
+      tags: always
+      authorized_key:
+        user: simone
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOpzmrUf1YHfZ9TNXBqK+wbRGF4M6SG2KTkeOPV29mrY ansible"
+
 
 - hosts: workstations
   become: true
@@ -34,6 +46,7 @@
       mode: 0755
       owner: root
       group: root
+
 
 - hosts: web_servers
   become: true
@@ -89,6 +102,7 @@
       owner: root
       group: root
       mode: 0644
+
 
 - hosts: db_servers
   become: true
